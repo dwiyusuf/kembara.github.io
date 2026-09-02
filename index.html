@@ -318,7 +318,23 @@
 
         function deleteData(id) {
             deleteTargetId = id;
-            deleteModal.show();
+            const modalEl = document.getElementById('deleteModal');
+            
+            // Pastikan library bootstrap sudah dimuat sebelum dipanggil
+            if (typeof bootstrap !== 'undefined' && modalEl) {
+                const deleteModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                deleteModal.show();
+            } else {
+                // Fallback jika bootstrap gagal dimuat
+                if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+                    fetch(`${WEB_APP_URL}?action=delete&id=${id}`)
+                    .then(res => res.json())
+                    .then(response => {
+                        showToast("Data berhasil dihapus!", "success");
+                        loadData();
+                    });
+                }
+            }
         }
         // Handler Tombol Konfirmasi pada Modal
         document.getElementById("btnConfirmDelete").addEventListener("click", function() {
