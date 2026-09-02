@@ -113,29 +113,43 @@
         });
 
         function loadData() {
-            fetch(WEB_APP_URL + "?action=read")
-            .then(res => res.json())
-            .then(data => {
+            // Buat nama fungsi callback unik
+            const callbackName = 'handleDataResponse_' + Math.round(100000 * Math.random());
+            
+            // Deklarasikan fungsi callback di window global
+            window[callbackName] = function(data) {
                 let rows = "";
                 data.forEach(item => {
+                    const safeItem = JSON.stringify(item).replace(/'/g, "\\'");
                     rows += `<tr>
-                        <td>${item.nama}</td>
-                        <td>${item.pushup}</td>
-                        <td>${item.situp}</td>
-                        <td>${item.backup}</td>
-                        <td>${item.plank}</td>
-                        <td>${item.squat}</td>
-                        <td>${item.steps}</td>
-                        <td>${item.flexometer}</td>
+                        <td>${item.nama || ''}</td>
+                        <td>${item.pushup || 0}</td>
+                        <td>${item.situp || 0}</td>
+                        <td>${item.backup || 0}</td>
+                        <td>${item.plank || 0}</td>
+                        <td>${item.squat || 0}</td>
+                        <td>${item.steps || 0}</td>
+                        <td>${item.flexometer || 0}</td>
                         <td>
-                            <button onclick='editData(${JSON.stringify(item)})'>Edit</button>
-                            <button onclick='deleteData("${item.id}")'>Hapus</button>
+                            <button type="button" onclick='editData(${safeItem})'>Edit</button>
+                            <button type="button" onclick="deleteData('${item.id}')">Hapus</button>
                         </td>
                     </tr>`;
                 });
                 document.getElementById("dataTable").innerHTML = rows;
-            })
-            .catch(err => console.error("Error muat data:", err));
+                
+                // Bersihkan tag script dan fungsi callback setelah selesai
+                document.body.removeChild(script);
+                delete window[callbackName];
+            };
+        
+            // Sisipkan tag script secara dinamis untuk menembus batasan CORS
+            const script = document.createElement('script');
+            script.src = `${WEB_APP_URL}?action=read&callback=${callbackName}`;
+            script.onerror = function() {
+                console.error("Gagal memuat data via JSONP");
+            };
+            document.body.appendChild(script);
         }
 
         function editData(item) {
