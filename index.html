@@ -135,6 +135,7 @@
                 });
                 document.getElementById("dataTable").innerHTML = rows;
             });
+            .catch(err => console.error("Error muat data:", err));
         }
 
         function editData(item) {
