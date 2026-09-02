@@ -178,18 +178,24 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzMCT6dZWuTLqtFHxaXOXIlBH0aZoTofnyF5wPQYFnTRiYAbr_pA3evKIAfsek9P3-L/exec";
         let deleteTargetId = null;
         
-        // Helper Function untuk Menampilkan Toast Notification
+       // Helper Function Toast Notifikasi Aman
         function showToast(message, type = 'success') {
             const toastEl = document.getElementById('liveToast');
             const toastMessage = document.getElementById('toastMessage');
-            if (!toastEl || !toastMessage) return;
+            
+            // Jika Toast HTML atau Bootstrap JS belum siap, fallback ke alert bawaan
+            if (typeof bootstrap === 'undefined' || !toastEl || !toastMessage) {
+                alert(message);
+                return;
+            }
             
             const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill';
             
             toastEl.className = `toast align-items-center text-white bg-${type} border-0 shadow`;
             toastMessage.innerHTML = `<i class="bi ${icon}"></i> ${message}`;
             
-            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            // Inisialisasi toast secara aman
+            const toast = bootstrap.Toast.getInstance(toastEl) || new bootstrap.Toast(toastEl, { delay: 3000 });
             toast.show();
         }
     
