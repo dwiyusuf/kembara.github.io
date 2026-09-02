@@ -177,14 +177,13 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzMCT6dZWuTLqtFHxaXOXIlBH0aZoTofnyF5wPQYFnTRiYAbr_pA3evKIAfsek9P3-L/exec";
         let deleteTargetId = null;
-        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
         
         // Helper Function untuk Menampilkan Toast Notification
         function showToast(message, type = 'success') {
             const toastEl = document.getElementById('liveToast');
             const toastMessage = document.getElementById('toastMessage');
+            if (!toastEl || !toastMessage) return;
             
-            // Tentukan icon berdasarkan tipe notification
             const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill';
             
             toastEl.className = `toast align-items-center text-white bg-${type} border-0 shadow`;
@@ -193,9 +192,8 @@
             const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
             toast.show();
         }
-        
-
-        // 1. Submit Form Handler (Menggantikan alert simpan)
+    
+        // 1. Submit Form Handler
         document.getElementById("workoutForm").addEventListener("submit", function(e) {
             e.preventDefault();
             
@@ -238,11 +236,10 @@
                 btnSimpan.innerHTML = `<i class="bi bi-save me-1"></i> Simpan Data`;
             });
         });
-
+    
         function loadData() {
             const callbackName = 'handleDataResponse_' + Math.round(100000 * Math.random());
             
-            // Tampilkan animasi titik bergerak saat proses dimuat
             document.getElementById("dataTable").innerHTML = `
                 <tr>
                     <td colspan="9" class="text-muted text-center py-4 fw-semibold">
@@ -287,7 +284,7 @@
                 }
                 delete window[callbackName];
             };
-        
+    
             const script = document.createElement('script');
             script.src = `${WEB_APP_URL}?action=read&callback=${callbackName}`;
             script.onerror = function() {
@@ -301,7 +298,7 @@
             };
             document.body.appendChild(script);
         }
-
+    
         function editData(item) {
             document.getElementById("id").value = item.id;
             document.getElementById("nama").value = item.nama;
@@ -315,13 +312,12 @@
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
+    
         // Fungsi pemicu modal hapus
         function deleteData(id) {
             deleteTargetId = id;
             const modalEl = document.getElementById('deleteModal');
             
-            // Inisialisasi modal secara aman saat tombol hapus diklik
             if (typeof bootstrap !== 'undefined' && modalEl) {
                 const deleteModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
                 deleteModal.show();
@@ -335,7 +331,7 @@
                 btnConfirmDelete.addEventListener("click", function() {
                     if (deleteTargetId) {
                         const modalEl = document.getElementById('deleteModal');
-                        const deleteModal = bootstrap.Modal.getInstance(modalEl);
+                        const deleteModal = modalEl ? bootstrap.Modal.getInstance(modalEl) : null;
                         
                         fetch(`${WEB_APP_URL}?action=delete&id=${deleteTargetId}`)
                         .then(res => res.json())
@@ -353,7 +349,7 @@
                 });
             }
         });
-
+    
         // Muat data saat halaman pertama kali dibuka
         loadData();
     </script>
