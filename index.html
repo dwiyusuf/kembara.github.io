@@ -175,12 +175,34 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Ganti dengan URL Google Apps Script Web App Anda
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzMCT6dZWuTLqtFHxaXOXIlBH0aZoTofnyF5wPQYFnTRiYAbr_pA3evKIAfsek9P3-L/exec";
+        let deleteTargetId = null;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        
+        // Helper Function untuk Menampilkan Toast Notification
+        function showToast(message, type = 'success') {
+            const toastEl = document.getElementById('liveToast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            // Tentukan icon berdasarkan tipe notification
+            const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill';
+            
+            toastEl.className = `toast align-items-center text-white bg-${type} border-0 shadow`;
+            toastMessage.innerHTML = `<i class="bi ${icon}"></i> ${message}`;
+            
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+        }
+        
 
+        // 1. Submit Form Handler (Menggantikan alert simpan)
         document.getElementById("workoutForm").addEventListener("submit", function(e) {
             e.preventDefault();
             
+            const btnSimpan = document.getElementById("btnSimpan");
+            btnSimpan.disabled = true;
+            btnSimpan.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status"></span> Menyimpan...`;
+        
             const id = document.getElementById("id").value;
             const action = id ? "update" : "create";
             
@@ -196,18 +218,25 @@
                 steps: document.getElementById("steps").value,
                 flexometer: document.getElementById("flexometer").value
             };
-
+        
             const params = new URLSearchParams(data);
-
+        
             fetch(`${WEB_APP_URL}?${params.toString()}`)
             .then(res => res.json())
             .then(response => {
-                alert("Data berhasil disimpan!");
+                showToast("Data berhasil disimpan!", "success");
                 document.getElementById("workoutForm").reset();
                 document.getElementById("id").value = "";
                 loadData();
             })
-            .catch(err => console.error("Error simpan data:", err));
+            .catch(err => {
+                showToast("Gagal menyimpan data!", "danger");
+                console.error("Error simpan data:", err);
+            })
+            .finally(() => {
+                btnSimpan.disabled = false;
+                btnSimpan.innerHTML = `<i class="bi bi-save me-1"></i> Simpan Data`;
+            });
         });
 
         function loadData() {
@@ -288,18 +317,59 @@
         }
 
         function deleteData(id) {
-            if(confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-                fetch(`${WEB_APP_URL}?action=delete&id=${id}`)
+            deleteTargetId = id;
+            deleteModal.show();
+        }
+        // Handler Tombol Konfirmasi pada Modal
+        document.getElementById("btnConfirmDelete").addEventListener("click", function() {
+            if (deleteTargetId) {
+                fetch(`${WEB_APP_URL}?action=delete&id=${deleteTargetId}`)
                 .then(res => res.json())
                 .then(response => {
-                    alert("Data berhasil dihapus!");
+                    deleteModal.hide();
+                    showToast("Data berhasil dihapus!", "success");
+                    deleteTargetId = null;
                     loadData();
+                })
+                .catch(err => {
+                    deleteModal.hide();
+                    showToast("Gagal menghapus data!", "danger");
                 });
             }
-        }
+        });
 
         // Muat data saat halaman pertama kali dibuka
         loadData();
     </script>
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1085;">
+        <div id="liveToast" class="toast align-items-center text-white bg-success border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-2" id="toastMessage">
+                    <i class="bi bi-check-circle-fill"></i> Data berhasil disimpan!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Konfirmasi Hapus
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmDelete">Hapus Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
