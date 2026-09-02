@@ -79,7 +79,7 @@
         // Ganti dengan URL Web App Google Apps Script Anda
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzMCT6dZWuTLqtFHxaXOXIlBH0aZoTofnyF5wPQYFnTRiYAbr_pA3evKIAfsek9P3-L/exec";
 
-        document.getElementById("workoutForm").addEventListener("submit", function(e) {
+       document.getElementById("workoutForm").addEventListener("submit", function(e) {
             e.preventDefault();
             
             const id = document.getElementById("id").value;
@@ -97,10 +97,10 @@
                 steps: document.getElementById("steps").value,
                 flexometer: document.getElementById("flexometer").value
             };
-
+        
             const params = new URLSearchParams(data);
-
-            // Menggunakan GET untuk menghindari blokir CORS POST pada Google Apps Script
+        
+            // Mengirim permintaan menggunakan metode GET via Query Parameters
             fetch(`${WEB_APP_URL}?${params.toString()}`)
             .then(res => res.json())
             .then(response => {
