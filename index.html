@@ -100,10 +100,8 @@
 
             const params = new URLSearchParams(data);
 
-            fetch(WEB_APP_URL, {
-                method: "POST",
-                body: params
-            })
+            // Menggunakan GET untuk menghindari blokir CORS POST pada Google Apps Script
+            fetch(`${WEB_APP_URL}?${params.toString()}`)
             .then(res => res.json())
             .then(response => {
                 alert("Data berhasil disimpan!");
