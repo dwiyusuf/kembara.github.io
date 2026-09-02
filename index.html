@@ -316,40 +316,40 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Fungsi pemicu modal hapus
         function deleteData(id) {
             deleteTargetId = id;
             const modalEl = document.getElementById('deleteModal');
             
-            // Pastikan library bootstrap sudah dimuat sebelum dipanggil
+            // Inisialisasi modal secara aman saat tombol hapus diklik
             if (typeof bootstrap !== 'undefined' && modalEl) {
                 const deleteModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
                 deleteModal.show();
-            } else {
-                // Fallback jika bootstrap gagal dimuat
-                if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-                    fetch(`${WEB_APP_URL}?action=delete&id=${id}`)
-                    .then(res => res.json())
-                    .then(response => {
-                        showToast("Data berhasil dihapus!", "success");
-                        loadData();
-                    });
-                }
             }
         }
-        // Handler Tombol Konfirmasi pada Modal
-        document.getElementById("btnConfirmDelete").addEventListener("click", function() {
-            if (deleteTargetId) {
-                fetch(`${WEB_APP_URL}?action=delete&id=${deleteTargetId}`)
-                .then(res => res.json())
-                .then(response => {
-                    deleteModal.hide();
-                    showToast("Data berhasil dihapus!", "success");
-                    deleteTargetId = null;
-                    loadData();
-                })
-                .catch(err => {
-                    deleteModal.hide();
-                    showToast("Gagal menghapus data!", "danger");
+        
+        // Event listener untuk tombol konfirmasi hapus di dalam modal
+        document.addEventListener("DOMContentLoaded", function() {
+            const btnConfirmDelete = document.getElementById("btnConfirmDelete");
+            if (btnConfirmDelete) {
+                btnConfirmDelete.addEventListener("click", function() {
+                    if (deleteTargetId) {
+                        const modalEl = document.getElementById('deleteModal');
+                        const deleteModal = bootstrap.Modal.getInstance(modalEl);
+                        
+                        fetch(`${WEB_APP_URL}?action=delete&id=${deleteTargetId}`)
+                        .then(res => res.json())
+                        .then(response => {
+                            if (deleteModal) deleteModal.hide();
+                            showToast("Data berhasil dihapus!", "success");
+                            deleteTargetId = null;
+                            loadData();
+                        })
+                        .catch(err => {
+                            if (deleteModal) deleteModal.hide();
+                            showToast("Gagal menghapus data!", "danger");
+                        });
+                    }
                 });
             }
         });
