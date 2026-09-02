@@ -318,13 +318,32 @@
             deleteTargetId = id;
             const modalEl = document.getElementById('deleteModal');
             
-            if (typeof bootstrap !== 'undefined' && modalEl) {
+            if (modalEl && typeof bootstrap !== 'undefined') {
                 const deleteModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
                 deleteModal.show();
+            } else {
+                // Fallback if modal HTML is missing or Bootstrap JS failed to load
+                if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+                    executeDelete(id);
+                }
             }
         }
         
-        // Event listener untuk tombol konfirmasi hapus di dalam modal
+        function executeDelete(id) {
+            fetch(`${WEB_APP_URL}?action=delete&id=${id}`)
+            .then(res => res.json())
+            .then(response => {
+                showToast("Data berhasil dihapus!", "success");
+                deleteTargetId = null;
+                loadData();
+            })
+            .catch(err => {
+                showToast("Gagal menghapus data!", "danger");
+                console.error("Error delete:", err);
+            });
+        }
+    
+        // Bind confirmation button click
         document.addEventListener("DOMContentLoaded", function() {
             const btnConfirmDelete = document.getElementById("btnConfirmDelete");
             if (btnConfirmDelete) {
@@ -332,19 +351,9 @@
                     if (deleteTargetId) {
                         const modalEl = document.getElementById('deleteModal');
                         const deleteModal = modalEl ? bootstrap.Modal.getInstance(modalEl) : null;
+                        if (deleteModal) deleteModal.hide();
                         
-                        fetch(`${WEB_APP_URL}?action=delete&id=${deleteTargetId}`)
-                        .then(res => res.json())
-                        .then(response => {
-                            if (deleteModal) deleteModal.hide();
-                            showToast("Data berhasil dihapus!", "success");
-                            deleteTargetId = null;
-                            loadData();
-                        })
-                        .catch(err => {
-                            if (deleteModal) deleteModal.hide();
-                            showToast("Gagal menghapus data!", "danger");
-                        });
+                        executeDelete(deleteTargetId);
                     }
                 });
             }
@@ -363,7 +372,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
@@ -374,7 +382,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.
+                    Apakah Anda yakin ingin menghapus data ini?
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -383,5 +391,6 @@
             </div>
         </div>
     </div>
+   
 </body>
 </html>
