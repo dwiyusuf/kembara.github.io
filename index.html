@@ -246,10 +246,13 @@
         function loadData() {
             const callbackName = 'handleDataResponse_' + Math.round(100000 * Math.random());
             
+            // Menampilkan animasi teks titik bergerak di tengah-tengah card
             document.getElementById("dataTable").innerHTML = `
                 <tr>
-                    <td colspan="9" class="text-muted text-center py-4 fw-semibold">
-                        Memuat data<span class="loading-dots"></span>
+                    <td colspan="9" class="p-0 border-0">
+                        <div class="d-flex align-items-center justify-content-center text-muted fw-semibold" style="min-height: 250px;">
+                            <span>Memuat data<span class="loading-dots"></span></span>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -257,7 +260,7 @@
             window[callbackName] = function(data) {
                 let rows = "";
                 if (!data || data.length === 0) {
-                    rows = `<tr><td colspan="9" class="text-muted text-center py-3">Belum ada data tersimpan.</td></tr>`;
+                    rows = `<tr><td colspan="9" class="text-muted text-center py-4">Belum ada data tersimpan.</td></tr>`;
                 } else {
                     data.forEach(item => {
                         const safeItem = JSON.stringify(item).replace(/'/g, "\\'");
@@ -290,13 +293,13 @@
                 }
                 delete window[callbackName];
             };
-    
+        
             const script = document.createElement('script');
             script.src = `${WEB_APP_URL}?action=read&callback=${callbackName}`;
             script.onerror = function() {
                 document.getElementById("dataTable").innerHTML = `
                     <tr>
-                        <td colspan="9" class="text-danger text-center py-3">
+                        <td colspan="9" class="text-danger text-center py-4">
                             <i class="bi bi-exclamation-triangle me-1"></i> Gagal memuat data dari server.
                         </td>
                     </tr>
