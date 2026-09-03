@@ -246,11 +246,11 @@
         function loadData() {
             const callbackName = 'handleDataResponse_' + Math.round(100000 * Math.random());
             
-            // Menampilkan animasi teks titik bergerak di tengah-tengah card
+            // Positioned relative to the card container to stay centered on mobile screens
             document.getElementById("dataTable").innerHTML = `
                 <tr>
                     <td colspan="9" class="p-0 border-0">
-                        <div class="d-flex align-items-center justify-content-center text-muted fw-semibold" style="min-height: 250px;">
+                        <div class="d-flex align-items-center justify-content-center text-muted fw-semibold w-100 py-5">
                             <span>Memuat data<span class="loading-dots"></span></span>
                         </div>
                     </td>
