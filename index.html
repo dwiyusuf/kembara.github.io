@@ -138,9 +138,19 @@
 
             <div class="col-lg-8">
                 <div class="card card-custom p-4">
-                    <h4 class="card-title fw-bold mb-3 text-dark border-bottom pb-2">
-                        <i class="bi bi-table text-warning me-2"></i>Data Tersimpan
-                    </h4>
+                    <!-- Header Card & Search Box -->
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom pb-2 mb-3 gap-2">
+                        <h4 class="card-title fw-bold text-dark m-0">
+                            <i class="bi bi-table text-warning me-2"></i>Data Workout Tersimpan
+                        </h4>
+                        <!-- Search Box Nama -->
+                        <div class="input-group style-search" style="max-width: 280px;">
+                            <span class="input-group-text bg-white border-end-0 text-muted">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0 ps-0" id="searchNama" placeholder="Cari nama..." onkeyup="filterNama()">
+                        </div>
+                    </div>
                     
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-bordered align-middle text-center table-pks mb-0">
@@ -242,7 +252,46 @@
                 btnSimpan.innerHTML = `<i class="bi bi-save me-1"></i> Simpan Data`;
             });
         });
-    
+        
+        function filterNama() {
+            const input = document.getElementById("searchNama");
+            const filter = input.value.toLowerCase().trim();
+            const table = document.getElementById("dataTable");
+            const tr = table.getElementsByTagName("tr");
+            let visibleCount = 0;
+        
+            for (let i = 0; i < tr.length; i++) {
+                // Ambil kolom pertama (Nama)
+                const tdNama = tr[i].getElementsByTagName("td")[0];
+                
+                if (tdNama) {
+                    const txtValue = tdNama.textContent || tdNama.innerText;
+                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                        visibleCount++;
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        
+            // Tampilkan pesan jika nama tidak ditemukan
+            let noResultRow = document.getElementById("noSearchResult");
+            if (visibleCount === 0 && tr.length > 0 && filter !== "") {
+                if (!noResultRow) {
+                    noResultRow = document.createElement("tr");
+                    noResultRow.id = "noSearchResult";
+                    noResultRow.innerHTML = `<td colspan="9" class="text-muted py-4 text-center">Nama "<b>${input.value}</b>" tidak ditemukan.</td>`;
+                    table.appendChild(noResultRow);
+                } else {
+                    noResultRow.style.display = "";
+                    noResultRow.innerHTML = `<td colspan="9" class="text-muted py-4 text-center">Nama "<b>${input.value}</b>" tidak ditemukan.</td>`;
+                }
+            } else if (noResultRow) {
+                noResultRow.style.display = "none";
+            }
+        }
+        
         function loadData() {
             const callbackName = 'handleDataResponse_' + Math.round(100000 * Math.random());
             
