@@ -234,7 +234,7 @@
                 flexometer: document.getElementById("flexometer").value
             };
         
-            const params = new URLSearchParams(data);
+            const params = new URLSearchParams(kbl);
         
             fetch(`${WEB_APP_URL}?${params.toString()}`)
             .then(res => res.json())
