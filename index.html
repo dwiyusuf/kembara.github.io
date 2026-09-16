@@ -90,6 +90,18 @@
                             <label class="form-label fw-semibold">Nama Anggota</label>
                             <input type="text" class="form-control" id="nama" placeholder="Masukkan nama" required>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Berat</label>
+                            <input type="text" class="form-control" id="berat" placeholder="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tinggi</label>
+                            <input type="text" class="form-control" id="tinggi" placeholder="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Lingkar Perut</label>
+                            <input type="text" class="form-control" id="lingkar" placeholder="0" required>
+                        </div>
                         
                         <div class="row g-2 mb-2">
                             <div class="col-6">
@@ -165,6 +177,9 @@
                                     <th>Steps</th>
                                     <th>Flexo</th>
                                     <th>Aksi</th>
+                                    <th>Berat</th>
+                                    <th>Tinggi</th>
+                                    <th>Lingkar</th>
                                 </tr>
                             </thead>
                             <tbody id="dataTable">
@@ -230,7 +245,11 @@
                 plank: document.getElementById("plank").value,
                 squat: document.getElementById("squat").value,
                 steps: document.getElementById("steps").value,
-                flexometer: document.getElementById("flexometer").value
+                flexometer: document.getElementById("flexometer").value,
+                berat: document.getElementById("berat").value,
+                tinggi: document.getElementById("tinggi").value,
+                lingkar: document.getElementById("lingkar").value
+                
             };
         
             const params = new URLSearchParams(data);
@@ -322,6 +341,9 @@
                             <td>${item.squat || 0}</td>
                             <td>${item.steps || 0}</td>
                             <td>${item.flexometer || 0} cm</td>
+                            <td>${item.berat || 0}</td>
+                            <td>${item.tinggi || 0}</td>
+                            <td>${item.lingkar || 0}</td>
                             <td>
                                 <div class="btn-group btn-group-sm">
                                     <button type="button" class="btn btn-outline-warning" onclick='editData(${safeItem})'>
@@ -367,6 +389,9 @@
             document.getElementById("squat").value = item.squat;
             document.getElementById("steps").value = item.steps;
             document.getElementById("flexometer").value = item.flexometer;
+            document.getElementById("berat").value = item.berat;
+            document.getElementById("tinggi").value = item.tinggi;
+            document.getElementById("lingkar").value = item.lingkar;
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
