@@ -329,7 +329,7 @@
             window[callbackName] = function(data) {
                 let rows = "";
                 if (!data || data.length === 0) {
-                    rows = `<tr><td colspan="9" class="text-muted text-center py-4">Belum ada data tersimpan.</td></tr>`;
+                    rows = `<tr><td colspan="12" class="text-muted text-center py-4">Belum ada data tersimpan.</td></tr>`;
                 } else {
                     data.forEach(item => {
                         const safeItem = JSON.stringify(item).replace(/'/g, "\\'");
@@ -371,7 +371,7 @@
             script.onerror = function() {
                 document.getElementById("dataTable").innerHTML = `
                     <tr>
-                        <td colspan="9" class="text-danger text-center py-4">
+                        <td colspan="12" class="text-danger text-center py-4">
                             <i class="bi bi-exclamation-triangle me-1"></i> Gagal memuat data dari server.
                         </td>
                     </tr>
@@ -392,8 +392,7 @@
             document.getElementById("flexometer").value = item.flexometer;
             document.getElementById("berat").value = item.berat;
             document.getElementById("tinggi").value = item.tinggi;
-            document.getElementById("lingkar").value = item.lingkar;
-            
+            document.getElementById("lingkar").value = item.lingkar;            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     
